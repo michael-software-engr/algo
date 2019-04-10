@@ -26,10 +26,17 @@ N {
     e1 = fstout($);
     w1 = tw[e1.head];
     tw[$] = w1 + (sp+w)/2.0;
-    if (e1.side == "left")
+
+    if (e1.comment == "left")
       xoff[$] = tw[$] - w/2.0;
     else
       xoff[$] = w/2.0;
+
+    // ... original
+    // if (e1.side == "left")
+    //   xoff[$] = tw[$] - w/2.0;
+    // else
+    //   xoff[$] = w/2.0;
   }
   else {
     e1 = fstout($);
@@ -58,10 +65,16 @@ N {
   n = e1.head;
   sscanf (n.pos, "%f,%f", &z, &y);
   if ($.outdegree == 1) {
-    if (e1.side == "left")
+    if (e1.comment == "left")
       n.pos = sprintf("%f,%f",  x - tw[n] - sp/2.0 + xoff[n], y);
     else
       n.pos = sprintf("%f,%f", x + sp/2.0 + xoff[n], y);
+
+    // ... original
+    // if (e1.side == "left")
+    //   n.pos = sprintf("%f,%f",  x - tw[n] - sp/2.0 + xoff[n], y);
+    // else
+    //   n.pos = sprintf("%f,%f", x + sp/2.0 + xoff[n], y);
   }
   else {
     n.pos = sprintf("%f,%f", x - tw[n] - sp/2.0 + xoff[n], y);

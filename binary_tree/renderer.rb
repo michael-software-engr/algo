@@ -24,9 +24,11 @@ class BinarySearchTree
       gviz_node = gviz.add_nodes(value_get(root_node))
       left = root_node.left
 
+      # Important: the "comment" attribute (values "left" and "right") is used in
+      #   the gvpr (gvpr-tree.gv) tool.
       if left && left.value
         gviz_node_left = gviz.add_nodes(value_get(left))
-        gviz.add_edges(gviz_node, gviz_node_left)
+        gviz.add_edges(gviz_node, gviz_node_left, comment: 'left')
         build left
       end
 
@@ -34,7 +36,7 @@ class BinarySearchTree
       return if !right || !right.value
 
       gviz_node_right = gviz.add_nodes(value_get(right))
-      gviz.add_edges(gviz_node, gviz_node_right)
+      gviz.add_edges(gviz_node, gviz_node_right, comment: 'right')
       build right
     end
 
