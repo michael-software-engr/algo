@@ -52,7 +52,7 @@ class Heap
 
     return if head_ix == idx
 
-    @data[idx], @data[head_ix] = @data[head_ix], @data[idx]
+    @data[idx], @data[head_ix] = data[head_ix], data[idx]
 
     bubble(head_ix)
   end

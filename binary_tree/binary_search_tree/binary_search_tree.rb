@@ -1,14 +1,12 @@
 require 'fileutils'
 require 'pathname'
 
-require_relative '../sort/quick'
-
 # TODO: ...
 #   1. Deletion
 #   2. In-order?
 #   3. Pre-order?
 class BinarySearchTree
-  def self.from_sorted_array_to_bst(arr = self, tree = nil)
+  def self.from_sorted_array_to_bst(arr, tree = nil)
     return if arr.length.zero?
 
     low = 0

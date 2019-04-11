@@ -1,9 +1,10 @@
 require 'fileutils'
 require 'pathname'
 
+require_relative '../../lib/lib'
+
 require_relative './heap'
 require_relative './renderer'
-require_relative '../lib/lib'
 
 class Heap
   class Runner
