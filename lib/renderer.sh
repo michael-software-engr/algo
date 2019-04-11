@@ -1,4 +1,4 @@
-render() {
+renderer() {
   [ -n "${viz_dot_file-}" ] || __error__ 'must set viz_dot_file, the main viz dot file.'
   [ -n "${gvpr_tree_util-}" ] || __error__ 'must set gvpr_tree_util, the GVPR tree util dot file.'
   [ -n "${final_output_format-}" ] || __error__ 'must set final_output_format, the final output format.'
@@ -18,4 +18,4 @@ __error__() {
   exit 1
 }
 set -o nounset
-render "$@"
+renderer "$@"

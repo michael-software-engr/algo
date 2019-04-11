@@ -1,7 +1,6 @@
 require 'fileutils'
 require 'pathname'
 
-require_relative './renderer'
 require_relative '../sort/quick'
 
 # TODO: ...
