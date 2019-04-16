@@ -1,0 +1,30 @@
+version: '3.7'
+
+services:
+  algo:
+    build:
+      context: ../../
+      dockerfile: ${dockerfile}
+      # dockerfile: ./docker/dev/Dockerfile
+      args:
+        xviewer_package: ${xviewer_package}
+        docker_uid: ${docker_uid}
+        docker_user: ${docker_user}
+        ruby_version: 2.6.2
+
+    # entrypoint: ./docker/${context_dir_bname}/entrypoint.sh
+    entrypoint: ${entrypoint}
+
+    environment:
+      - XAUTHORITY=${docker_xauth}
+      - DISPLAY=${DISPLAY}
+      # - XAUTHORITY=/tmp/.docker.xauth
+      # - DISPLAY=:0
+
+    volumes:
+      - ../../:/home/${docker_user}/algo
+      - ${xsock}:${xsock}
+      - ${docker_xauth}:${docker_xauth}
+      # - ../../:/home/dev/algo
+      # - /tmp/.X11-unix:/tmp/.X11-unix
+      # - /tmp/.docker.xauth:/tmp/.docker.xauth

@@ -1,0 +1,30 @@
+version: '3.7'
+
+services:
+  algo:
+    build:
+      context: ../../
+      dockerfile: ./docker/dev/Dockerfile
+      # dockerfile: ./docker/dev/Dockerfile
+      args:
+        xviewer_package: feh
+        docker_uid: 1000
+        docker_user: dev
+        ruby_version: 2.6.2
+
+    # entrypoint: ./docker//entrypoint.sh
+    entrypoint: ./docker/dev/entrypoint.sh
+
+    environment:
+      - XAUTHORITY=/tmp/.docker.xauth
+      - DISPLAY=:0
+      # - XAUTHORITY=/tmp/.docker.xauth
+      # - DISPLAY=:0
+
+    volumes:
+      - ../../:/home/dev/algo
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - /tmp/.docker.xauth:/tmp/.docker.xauth
+      # - ../../:/home/dev/algo
+      # - /tmp/.X11-unix:/tmp/.X11-unix
+      # - /tmp/.docker.xauth:/tmp/.docker.xauth
