@@ -17,19 +17,29 @@ docker_run() {
   local epbname='entrypoint.sh'
   local entrypoint="$context_dir/$epbname"
 
+  [ -d "$context_dir" ] || mkdir -p "$context_dir" || exit
+
+  local dfbname='Dockerfile'
+  local dockerfile="$context_dir/$dfbname"
   generate_docker_compose_file \
     "$docker_compose_template" \
     "$docker_compose_file" \
-    "$context_dir" \
+    "$dockerfile" \
     "$entrypoint" \
-    "$docker_xauth"
+    "$docker_xauth" \
+    "$dfbname"
+
+  generate_docker_file "$templates_dir" "$dockerfile" "$dfbname"
 
   generate_entry_point_file \
     "$templates_dir/$epbname" \
     "$entrypoint" \
     "$ruby_file"
 
-  check_required_files "$root_dir" "$docker_compose_file"
+  check_required_files \
+    "$docker_compose_file" \
+    "$dockerfile" \
+    "$entrypoint"
 
   docker-compose \
     --file "$docker_compose_file" \
@@ -41,18 +51,29 @@ docker_run() {
 generate_docker_compose_file() {
   local docker_compose_template="${1?:ERROR, must pass docker-compose.yml template path.}"
   local docker_compose_template_target="${2?:ERROR, must pass docker-compose.yml dest path.}"
-  local context_dir="${3?:ERROR, must pass context dir path.}"
+  local dockerfile="${3?:ERROR, must pass Dockerfile path.}"
   local entrypoint="${4?:ERROR, must pass entry point path.}"
   local docker_xauth="${5?:ERROR, must pass Docker XAUTHORITY path.}"
 
   xviewer_package='feh' \
-  dockerfile="$context_dir/Dockerfile" \
+  dockerfile="$dockerfile" \
   xsock='/tmp/.X11-unix' \
   docker_xauth="$docker_xauth" \
   docker_uid="$UID" \
   docker_user='dev' \
   entrypoint="$entrypoint" \
     envsubst < "$docker_compose_template" > "$docker_compose_template_target" || exit
+}
+
+generate_docker_file() {
+  local templates_dir="${1?:ERROR, must pass templates dir path.}"
+  local dockerfile="${2?:ERROR, must pass context dir path.}"
+  local dfbname="${3?:ERROR, must pass Dockerfile base name.}"
+
+  # Copy for now. envsubst will replace $variables with nothing. But we're
+  #   injecting env variables through docker-compose.
+  /bin/cp "$templates_dir/$dfbname" "$dockerfile"
+  # envsubst < "$templates_dir/$dfbname" > "$dockerfile" || exit
 }
 
 generate_entry_point_file() {
@@ -65,15 +86,8 @@ generate_entry_point_file() {
 }
 
 check_required_files() {
-  local root_dir="${1?:ERROR, must pass root dir.}"
-  shift
-
-  declare -a files_under_config=(
-    "$root_dir/dev/Dockerfile"
-  )
-
   local file=''
-  for file in "${files_under_config[@]}" "$@"; do
+  for file in "$@"; do
     [ -f "$file" ] || __error__ "required file '$file' not found."
   done
 }
