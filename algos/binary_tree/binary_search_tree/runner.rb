@@ -2,8 +2,8 @@ require 'fileutils'
 require 'pathname'
 require 'active_support/inflector'
 
+require_relative '../../../lib/lib'
 require_relative '../../sort/quick'
-require_relative '../../lib/lib'
 
 require_relative './binary_search_tree'
 require_relative './renderer'
