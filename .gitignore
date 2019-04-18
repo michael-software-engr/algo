@@ -1,4 +1,4 @@
 /misc
 /build
-/docker/dev/
+/docker/dev/entrypoint.sh
 /notes

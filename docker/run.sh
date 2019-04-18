@@ -8,7 +8,6 @@ docker_run() {
   local templates_dir="$root_dir/templates"
 
   local dcbname='docker-compose.yml'
-  local docker_compose_template="$templates_dir/$dcbname"
   local docker_compose_file="$context_dir/$dcbname"
 
   local docker_xauth=/tmp/.docker.xauth
@@ -21,15 +20,6 @@ docker_run() {
 
   local dfbname='Dockerfile'
   local dockerfile="$context_dir/$dfbname"
-  generate_docker_compose_file \
-    "$docker_compose_template" \
-    "$docker_compose_file" \
-    "$dockerfile" \
-    "$entrypoint" \
-    "$docker_xauth" \
-    "$dfbname"
-
-  generate_docker_file "$templates_dir" "$dockerfile" "$dfbname"
 
   generate_entry_point_file \
     "$templates_dir/$epbname" \
@@ -41,39 +31,20 @@ docker_run() {
     "$dockerfile" \
     "$entrypoint"
 
+  # Needed for the docker-compose config file below.
+  export xviewer_package='feh'
+  export dockerfile="$dockerfile"
+  export xsock='/tmp/.X11-unix'
+  export docker_xauth="$docker_xauth"
+  export docker_uid="$UID"
+  export docker_user='dev'
+  export entrypoint="$entrypoint"
+
   docker-compose \
     --file "$docker_compose_file" \
     build || exit
 
   docker-compose --file "$docker_compose_file" up
-}
-
-generate_docker_compose_file() {
-  local docker_compose_template="${1?:ERROR, must pass docker-compose.yml template path.}"
-  local docker_compose_template_target="${2?:ERROR, must pass docker-compose.yml dest path.}"
-  local dockerfile="${3?:ERROR, must pass Dockerfile path.}"
-  local entrypoint="${4?:ERROR, must pass entry point path.}"
-  local docker_xauth="${5?:ERROR, must pass Docker XAUTHORITY path.}"
-
-  xviewer_package='feh' \
-  dockerfile="$dockerfile" \
-  xsock='/tmp/.X11-unix' \
-  docker_xauth="$docker_xauth" \
-  docker_uid="$UID" \
-  docker_user='dev' \
-  entrypoint="$entrypoint" \
-    envsubst < "$docker_compose_template" > "$docker_compose_template_target" || exit
-}
-
-generate_docker_file() {
-  local templates_dir="${1?:ERROR, must pass templates dir path.}"
-  local dockerfile="${2?:ERROR, must pass context dir path.}"
-  local dfbname="${3?:ERROR, must pass Dockerfile base name.}"
-
-  # Copy for now. envsubst will replace $variables with nothing. But we're
-  #   injecting env variables through docker-compose.
-  /bin/cp "$templates_dir/$dfbname" "$dockerfile"
-  # envsubst < "$templates_dir/$dfbname" > "$dockerfile" || exit
 }
 
 generate_entry_point_file() {
