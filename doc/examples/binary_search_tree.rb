@@ -59,6 +59,12 @@ puts "BF traversal: #{bst.breadth_first_traversal}"
 puts "DF traversal: #{bst.depth_first_traversal}"
 puts
 
+value_a = elements_sorted_uniq[1]
+value_b = elements_sorted_uniq[3]
+lca     = bst.lca(value_a, value_b)
+puts "LCA         : #{lca.value} of #{value_a} and #{value_b}"
+puts
+
 require_relative '../../algos/binary_tree/binary_search_tree/renderer'
 
 jnr = '-'.freeze
@@ -71,6 +77,6 @@ BinarySearchTree::Renderer.new(bst.root_node).render(bname: bname)
 delete_this = elements_sorted_uniq[rand(elements_sorted_uniq.count - 1)]
 bst = bst.delete delete_this
 
-puts "Delete       : #{delete_this}"
-puts "in_order     : #{bst.in_order} (after delete)"
+puts "Delete      : #{delete_this}"
+puts "in_order    : #{bst.in_order} (after delete)"
 BinarySearchTree::Renderer.new(bst.root_node).render(bname: [bname, 'deleted-node'].join(jnr))

@@ -6,8 +6,9 @@ require_relative '../../sort/quick'
 #   / 3. Pre-order?
 #   / 4. Depth-first
 #   / 5. Breadth-first
-#   6. Least common ancestor
+#   / 6. Least common ancestor
 #   / 7. Tests
+#   8. Understand LCA
 
 class BinarySearchTree
   class Node
@@ -169,6 +170,26 @@ class BinarySearchTree
   end
   private_constant :BreadthFirst
 
+  module LeastCommonAncestor
+    class << self
+      def search(node, value_a, value_b) # rubocop:disable Metrics/CyclomaticComplexity, Style/LineLength
+        return nil if node.nil?
+
+        # If the root is one of a or b, then it is the LCA.
+        return node if node.value == value_a || node.value == value_b
+
+        left = search node.left, value_a, value_b
+        right = search node.right, value_a, value_b
+
+        # If both nodes lie in left or right then their LCA is in left or right,
+        # Otherwise root is their LCA
+        return node if !left.nil? && !right.nil?
+
+        return left.nil? ? right : left
+      end
+    end
+  end
+
   def self.from_array_to_bst(arr, tree = nil)
     return if arr.length.zero?
 
@@ -245,6 +266,15 @@ class BinarySearchTree
     elements = in_order.reject(&:nil?)
 
     return self.class.from_array_to_bst elements
+  end
+
+  def lca(value_a, value_b)
+    [value_a, value_b].each do |lca_value|
+      if !include? lca_value
+        raise "Can't find LCA because value '#{lca_value}' doesn't exist in tree."
+      end
+    end
+    LeastCommonAncestor.search root_node, value_a, value_b
   end
 
   private
