@@ -31,9 +31,9 @@ end
   got = bst.include? search_for_this
 
   got_dfs = bst.depth_first_search search_for_this
-  got_bfs = :TODO
+  got_bfs = bst.breadth_first_search search_for_this
 
-  are_expectations_met = got == exp_is_found && got_dfs == exp_is_found
+  are_expectations_met = got == exp_is_found && got_dfs == exp_is_found && got_bfs == exp_is_found
 
   puts 'ERROR: expectations not met...' if !are_expectations_met
 

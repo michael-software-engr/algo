@@ -7,7 +7,7 @@ require_relative '../../sort/quick'
 #   / 4. Depth-first
 #   / 5. Breadth-first
 #   6. Least common ancestor
-#   7. Tests
+#   / 7. Tests
 
 class BinarySearchTree
   class Node
@@ -56,32 +56,6 @@ class BinarySearchTree
     end
   end
   private_constant :Order
-
-  module BreadthFirst
-    class << self
-      def traversal(root_node)
-        node = root_node
-
-        queue = []
-        output = []
-
-        queue.push(node)
-
-        while !queue.empty?
-          current = queue.shift
-
-          queue.push(current.left) if current.left
-
-          queue.push(current.right) if current.right
-
-          output.push(current.value)
-        end
-
-        return output
-      end
-    end
-  end
-  private_constant :BreadthFirst
 
   module DepthFirst
     class << self
@@ -147,6 +121,54 @@ class BinarySearchTree
   end
   private_constant :DepthFirst
 
+  module BreadthFirst
+    class << self
+      def traversal(root_node)
+        node = root_node
+
+        queue = []
+        output = []
+
+        queue.push(node)
+
+        while !queue.empty?
+          current = queue.shift
+
+          queue.push(current.left) if current.left
+
+          queue.push(current.right) if current.right
+
+          output.push(current.value)
+        end
+
+        return output
+      end
+
+      def search(search_value, root_node) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity, Style/LineLength
+        node = root_node
+
+        queue = []
+
+        queue.push(node)
+        found = nil
+        while !queue.empty? && !found
+          current = queue.shift
+
+          queue.push(current.left) if current.left
+
+          queue.push(current.right) if current.right
+
+          found = current if current.value == search_value
+        end
+
+        return yield found if block_given?
+
+        return found ? true : false
+      end
+    end
+  end
+  private_constant :BreadthFirst
+
   def self.from_array_to_bst(arr, tree = nil)
     return if arr.length.zero?
 
@@ -173,16 +195,6 @@ class BinarySearchTree
     @root_node = Node.new vin
   end
 
-  def delete(vin)
-    node = search(vin)
-
-    node.value_set nil
-
-    elements = in_order.reject(&:nil?)
-
-    return self.class.from_array_to_bst elements
-  end
-
   def push(vin)
     do_push vin, root_node
   end
@@ -190,22 +202,6 @@ class BinarySearchTree
 
   def search(vin)
     do_search(vin, root_node) { |node| node }
-  end
-
-  def include?(vin)
-    do_search(vin, root_node) { true }
-  end
-
-  def breadth_first_traversal
-    BreadthFirst.traversal root_node
-  end
-
-  def depth_first_traversal
-    DepthFirst.traversal root_node
-  end
-
-  def depth_first_search(search_value)
-    DepthFirst.search search_value, root_node
   end
 
   def in_order
@@ -219,6 +215,36 @@ class BinarySearchTree
 
   def pre_order
     Order.perform root_node, :pre
+  end
+
+  def include?(vin)
+    do_search(vin, root_node) { true }
+  end
+
+  def depth_first_traversal
+    DepthFirst.traversal root_node
+  end
+
+  def depth_first_search(search_value)
+    DepthFirst.search search_value, root_node
+  end
+
+  def breadth_first_search(search_value)
+    BreadthFirst.search search_value, root_node
+  end
+
+  def breadth_first_traversal
+    BreadthFirst.traversal root_node
+  end
+
+  def delete(vin)
+    node = search(vin)
+
+    node.value_set nil
+
+    elements = in_order.reject(&:nil?)
+
+    return self.class.from_array_to_bst elements
   end
 
   private
@@ -255,6 +281,7 @@ class BinarySearchTree
 
       return do_search vin, left, &block
     else
+      puts "What? #{node.value <=> vin} #{node.value} #{vin}"
       raise 'Should not end up here.'
     end
   end
