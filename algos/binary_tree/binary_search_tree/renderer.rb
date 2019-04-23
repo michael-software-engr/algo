@@ -29,6 +29,20 @@ class BinarySearchTree
 
       final_output_format = 'png'.freeze
 
+      # TODO: make docker work. It doesn't display multiple images simultaneously.
+      # You have to close the an open image display first before the succeeding
+      # images will be displayed.
+      # pid = spawn(
+      #   {
+      #     'viz_dot_file' => file,
+      #     'gvpr_tree_util' => Algo::Lib.gvpr_tree_file,
+      #     'final_output_format' => final_output_format,
+      #     'output_file' => build_dir.join("#{output_file_bname}.#{final_output_format}").to_s
+      #   },
+      #   Algo::Lib.renderer_script
+      # ) || raise
+      # Process.detach(pid)
+
       system(
         {
           'viz_dot_file' => file,
