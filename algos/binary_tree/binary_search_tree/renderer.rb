@@ -1,5 +1,7 @@
 require 'graphviz'
 
+require_relative '../../../lib/lib'
+
 class BinarySearchTree
   class Renderer
     def initialize(root_node, value_method: :value)
@@ -14,6 +16,28 @@ class BinarySearchTree
 
     def render_to_png(file = nil)
       render_to_file :png, file
+    end
+
+    def render(bname: nil, build_dir: nil, output_file_bname: nil)
+      bname ||= bname_get
+      build_dir ||= Algo::Lib.setup_build_dir dir_bname: bname
+      output_file_bname ||= bname
+
+      file = build_dir.join("#{output_file_bname}.gv").to_s
+
+      render_to_dot(file)
+
+      final_output_format = 'png'.freeze
+
+      system(
+        {
+          'viz_dot_file' => file,
+          'gvpr_tree_util' => Algo::Lib.gvpr_tree_file,
+          'final_output_format' => final_output_format,
+          'output_file' => build_dir.join("#{output_file_bname}.#{final_output_format}").to_s
+        },
+        Algo::Lib.renderer_script
+      ) || raise
     end
 
     private
@@ -52,6 +76,10 @@ class BinarySearchTree
       gviz.output(output_format => output_file)
 
       return output_file
+    end
+
+    def bname_get
+      File.basename(caller(2..2).first.split(':').first, '.*')
     end
   end
 end
