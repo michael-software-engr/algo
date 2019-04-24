@@ -59,8 +59,11 @@ puts "BF traversal: #{bst.breadth_first_traversal}"
 puts "DF traversal: #{bst.depth_first_traversal}"
 puts
 
+# value_a = elements_sorted_uniq[rand(elements_sorted_uniq.count - 1)]
+# value_b = elements_sorted_uniq[rand(elements_sorted_uniq.count - 1)]
 value_a = elements_sorted_uniq[1]
-value_b = elements_sorted_uniq[3]
+value_b = elements_sorted_uniq[elements.count >= 30 ? 11 : 3]
+
 lca     = bst.lca(value_a, value_b)
 puts "LCA         : #{lca.value} of #{value_a} and #{value_b}"
 puts

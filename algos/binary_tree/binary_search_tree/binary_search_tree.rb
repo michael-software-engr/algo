@@ -9,6 +9,7 @@ require_relative '../../sort/quick'
 #   / 6. Least common ancestor
 #   / 7. Tests
 #   8. Understand LCA
+#   9. Summary
 
 class BinarySearchTree
   class Node
@@ -170,23 +171,48 @@ class BinarySearchTree
   end
   private_constant :BreadthFirst
 
-  module LeastCommonAncestor
+  class LeastCommonAncestor
     class << self
-      def search(node, value_a, value_b) # rubocop:disable Metrics/CyclomaticComplexity, Style/LineLength
-        return nil if node.nil?
-
-        # If the root is one of a or b, then it is the LCA.
-        return node if node.value == value_a || node.value == value_b
-
-        left = search node.left, value_a, value_b
-        right = search node.right, value_a, value_b
-
-        # If both nodes lie in left or right then their LCA is in left or right,
-        # Otherwise root is their LCA
-        return node if !left.nil? && !right.nil?
-
-        return left.nil? ? right : left
+      # Assumption is both values are found in the tree.
+      # Validations should be done prior to invoking this method.
+      def search(node, value_a, value_b)
+        lca = new value_a, value_b
+        lca.perform node
       end
+    end
+
+    def initialize(value_a, value_b)
+      @value_a = value_a
+      @value_b = value_b
+      @lca_has_been_found = false
+    end
+
+    # Find p and q (value_a and value_b) using DFS.
+    # It will recurse until p, q or nil is found.
+    # ... will return nil because other branch does not contain p or q.
+    def perform(node) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity, Style/LineLength
+      return if node.nil? || lca_has_been_found
+
+      # If the root is one of a or b, then it is the LCA.
+      return node if node.value == value_a || node.value == value_b
+
+      left = perform node.left
+      right = perform node.right
+
+      if !left.nil? && !right.nil?
+        lca_has_been_found_set
+        return node
+      end
+
+      return left.nil? ? right : left
+    end
+
+    private
+
+    attr_reader :value_a, :value_b, :lca_has_been_found
+
+    def lca_has_been_found_set
+      @lca_has_been_found = true
     end
   end
 
@@ -208,7 +234,7 @@ class BinarySearchTree
     from_array_to_bst(arr[0...mid], tree)
     from_array_to_bst(arr[(mid + 1)..-1], tree)
 
-    tree
+    return tree
   end
 
   attr_reader :root_node
@@ -260,19 +286,15 @@ class BinarySearchTree
 
   def delete(vin)
     node = search(vin)
-
     node.value_set nil
-
     elements = in_order.reject(&:nil?)
 
     return self.class.from_array_to_bst elements
   end
 
   def lca(value_a, value_b)
-    [value_a, value_b].each do |lca_value|
-      if !include? lca_value
-        raise "Can't find LCA because value '#{lca_value}' doesn't exist in tree."
-      end
+    [value_a, value_b].each do |lcav|
+      raise "Can't find LCA because value '#{lcav}' doesn't exist in tree." if !include? lcav
     end
     LeastCommonAncestor.search root_node, value_a, value_b
   end

@@ -84,5 +84,33 @@ describe BinarySearchTree do
       end
     end
   end
+
+  describe '#lca' do
+    # rubocop:disable Layout/AlignArray, Layout/ExtraSpacing
+    lca_inputs = [
+       7, 80, 32,  2, 89, 86, 27, 25, 12,  7, 21, 36, 61, 31, 22,
+      29, 42, 88, 52, 40,  1, 62, 39, 92, 91, 49,  1, 75, 75,  9
+    ].freeze
+    # rubocop:enable Layout/AlignArray, Layout/ExtraSpacing
+    lca_p = 2
+    lca_q = 32
+    lca = 21
+
+    let(:bst) { BinarySearchTree.from_array_to_bst lca_inputs }
+
+    it "finds #{lca} as least common ancestor of #{lca_p} and #{lca_q}" do
+      expect(bst.lca(lca_p, lca_q).value).to eq lca
+    end
+
+    context 'when a node is not found' do
+      it 'raises an exception' do
+        non_existent_node = 123
+        expect { bst.lca(non_existent_node, 0) }.to raise_error(
+          RuntimeError,
+          "Can't find LCA because value '#{non_existent_node}' doesn't exist in tree."
+        )
+      end
+    end
+  end
 end
 # rubocop:enable Metrics/BlockLength
