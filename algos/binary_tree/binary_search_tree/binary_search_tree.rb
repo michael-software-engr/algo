@@ -8,7 +8,7 @@ require_relative '../../sort/quick'
 #   / 5. Breadth-first
 #   / 6. Least common ancestor
 #   / 7. Tests
-#   8. Understand LCA
+#   / 8. Understand LCA
 #   9. Summary
 
 class BinarySearchTree
@@ -125,13 +125,9 @@ class BinarySearchTree
 
   module BreadthFirst
     class << self
-      def traversal(root_node)
-        node = root_node
-
-        queue = []
+      def traversal(node)
+        queue = [node]
         output = []
-
-        queue.push(node)
 
         while !queue.empty?
           current = queue.shift
@@ -146,13 +142,10 @@ class BinarySearchTree
         return output
       end
 
-      def search(search_value, root_node) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity, Style/LineLength
-        node = root_node
-
-        queue = []
-
-        queue.push(node)
+      def search(search_value, node) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity, Style/LineLength
+        queue = [node]
         found = nil
+
         while !queue.empty? && !found
           current = queue.shift
 
