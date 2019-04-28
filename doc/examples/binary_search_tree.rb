@@ -1,6 +1,13 @@
 require_relative '../../algos/binary_tree/binary_search_tree/binary_search_tree'
 
-elements = Array.new(ARGV&.first&.to_i || 10) { rand 99 }
+elements = (
+  if ARGV.count > 1
+    ARGV.map(&:to_i)
+  else
+    Array.new(ARGV&.first&.to_i || 10) { rand 99 }
+    # Array.new(ARGV&.first&.to_i || 10) { |ix| ix }
+  end
+)
 elements_sorted_uniq = elements.sort.uniq
 
 bst = BinarySearchTree.from_array_to_bst elements
@@ -55,17 +62,18 @@ end
   puts "#{order}#{space}: #{bst.public_send(order)}"
 end
 
-puts "BF traversal: #{bst.breadth_first_traversal}"
 puts "DF traversal: #{bst.depth_first_traversal}"
+puts "BF traversal: #{bst.breadth_first_traversal}"
 puts
 
-# value_a = elements_sorted_uniq[rand(elements_sorted_uniq.count - 1)]
-# value_b = elements_sorted_uniq[rand(elements_sorted_uniq.count - 1)]
-value_a = elements_sorted_uniq[1]
-value_b = elements_sorted_uniq[elements.count >= 30 ? 11 : 3]
+value_a = elements_sorted_uniq[rand(elements_sorted_uniq.count - 1)]
+value_b = elements_sorted_uniq[rand(elements_sorted_uniq.count - 1)]
+# value_a = elements_sorted_uniq[1]
+# value_b = elements_sorted_uniq[elements.count >= 30 ? 11 : 3]
 
 lca     = bst.lca(value_a, value_b)
-puts "LCA         : #{lca.value} of #{value_a} and #{value_b}"
+values_str = (value_b > value_a ? [value_a, value_b] : [value_b, value_a]).join ' and '
+puts "LCA         : ... of #{values_str} is #{lca.value}"
 puts
 
 require_relative '../../algos/binary_tree/binary_search_tree/renderer'
