@@ -1,16 +1,5 @@
 require_relative '../../sort/quick'
 
-# TODO: ...
-#   / 1. Deletion
-#   / 2. In-order?
-#   / 3. Pre-order?
-#   / 4. Depth-first
-#   / 5. Breadth-first
-#   / 6. Least common ancestor
-#   / 7. Tests
-#   / 8. Understand LCA
-#   9. Summary
-
 class BinarySearchTree
   class Node
     attr_reader :value, :left, :right
@@ -214,20 +203,62 @@ class BinarySearchTree
 
     arr = tree ? arr : Sort.quick_sort(arr)
 
-    low = 0
-    max = arr.length
-    mid = (low + max) >> 1
+    lo_ix = 0
+    hi_ix = arr.length - 1
+    md_ix = (lo_ix + hi_ix) >> 1
 
+    md_val = arr[md_ix]
     if tree.nil?
-      tree = new arr[mid]
+      tree = new md_val
     else
-      tree << arr[mid]
+      tree << md_val
     end
 
-    from_array_to_bst(arr[0...mid], tree)
-    from_array_to_bst(arr[(mid + 1)..-1], tree)
+    from_array_to_bst(arr[0..(md_ix - 1)], tree) if md_ix.positive?
+    from_array_to_bst(arr[(md_ix + 1)..-1], tree)
 
     return tree
+  end
+
+  module Base
+    class << self
+      def do_push(vin, node)
+        case node.value <=> vin
+        when -1
+          return do_push(vin, node.right) if node.right
+
+          return node.right_set vin
+        when 0
+          false
+        when 1
+          return do_push(vin, node.left) if node.left
+
+          return node.left_set vin
+        else
+          raise 'Should not end up here.'
+        end
+      end
+
+      def do_search(vin, node, &block)
+        case node.value <=> vin
+        when -1
+          right = node.right
+          return false if !right
+
+          return do_search vin, right, &block
+        when 0
+          yield node
+        when 1
+          left = node.left
+          return false if !left
+
+          return do_search vin, left, &block
+        else
+          puts "What? #{node.value <=> vin} #{node.value} #{vin}"
+          raise 'Should not end up here.'
+        end
+      end
+    end
   end
 
   attr_reader :root_node
@@ -236,12 +267,12 @@ class BinarySearchTree
   end
 
   def push(vin)
-    do_push vin, root_node
+    Base.do_push vin, root_node
   end
   alias << push
 
   def search(vin)
-    do_search(vin, root_node) { |node| node }
+    Base.do_search(vin, root_node) { |node| node }
   end
 
   def in_order
@@ -258,7 +289,7 @@ class BinarySearchTree
   end
 
   def include?(vin)
-    do_search(vin, root_node) { true }
+    Base.do_search(vin, root_node) { true }
   end
 
   def depth_first_traversal
@@ -290,44 +321,5 @@ class BinarySearchTree
       raise "Can't find LCA because value '#{lcav}' doesn't exist in tree." if !include? lcav
     end
     LeastCommonAncestor.search root_node, value_a, value_b
-  end
-
-  private
-
-  def do_push(vin, node)
-    case node.value <=> vin
-    when -1
-      return do_push(vin, node.right) if node.right
-
-      return node.right_set vin
-    when 0
-      false
-    when 1
-      return do_push(vin, node.left) if node.left
-
-      return node.left_set vin
-    else
-      raise 'Should not end up here.'
-    end
-  end
-
-  def do_search(vin, node, &block)
-    case node.value <=> vin
-    when -1
-      right = node.right
-      return false if !right
-
-      return do_search vin, right, &block
-    when 0
-      yield node
-    when 1
-      left = node.left
-      return false if !left
-
-      return do_search vin, left, &block
-    else
-      puts "What? #{node.value <=> vin} #{node.value} #{vin}"
-      raise 'Should not end up here.'
-    end
   end
 end
