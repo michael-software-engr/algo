@@ -4,8 +4,8 @@ elements = (
   if ARGV.count > 1
     ARGV.map(&:to_i)
   else
-    Array.new(ARGV&.first&.to_i || 10) { rand 99 }
-    # Array.new(ARGV&.first&.to_i || 10) { |ix| ix }
+    # Array.new(ARGV&.first&.to_i || 10) { rand 99 }
+    Array.new(ARGV&.first&.to_i || 10) { |ix| ix }
   end
 )
 elements_sorted_uniq = elements.sort.uniq
